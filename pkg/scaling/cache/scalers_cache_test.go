@@ -3,8 +3,9 @@ package cache
 import (
 	"context"
 	"fmt"
-	"github.com/go-logr/logr"
 	"testing"
+
+	"github.com/go-logr/logr"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -132,6 +133,7 @@ func TestIsScaledJobActive(t *testing.T) {
 			},
 		}
 		cache, err = NewScalerCache(_scalers, factories, logr.DiscardLogger{}, recorder)
+		assert.Nil(t, err)
 		fmt.Printf("index: %d", index)
 		isActive, queueLength, maxValue = cache.IsScaledJobActive(context.TODO(), scaledJob)
 		//	assert.Equal(t, 5, index)

@@ -19,10 +19,11 @@ package scaling
 import (
 	"context"
 	"fmt"
-	"github.com/kedacore/keda/v2/pkg/scaling/cache"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/kedacore/keda/v2/pkg/scaling/cache"
 
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"

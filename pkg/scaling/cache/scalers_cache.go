@@ -19,6 +19,7 @@ package cache
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-logr/logr"
 	kedav1alpha1 "github.com/kedacore/keda/v2/apis/keda/v1alpha1"
 	"github.com/kedacore/keda/v2/pkg/eventreason"

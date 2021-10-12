@@ -36,50 +36,11 @@ jobs:
       - name: Verify Generated clientset is up to date
         run: make clientset-verify
 
+      - name: Build
+        run: make build
+
       - name: Test
         run: make test
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          # Username used to log in to a Docker registry. If not set then no login will occur
-          username: ${{ github.repository_owner }}
-          # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
-          password: ${{ secrets.GHCR_AUTH_PAT }}
-          # Server address of Docker registry. If not set then will default to Docker Hub
-          registry: ghcr.io
-
-      - name: Login to Docker Hub
-        env:
-          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        run: echo $DOCKER_HUB_ACCESS_TOKEN | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-
-      - name: Publish on GitHub Container Registry
-        run: make publish
-
-      - name: Publish on Docker Hub
-        run: make publish-dockerhub
-
-      - name: Run end to end tests
-        env:
-          AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION }}
-          AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          AZURE_SP_ID: ${{ secrets.AZURE_SP_ID }}
-          AZURE_SP_KEY: ${{ secrets.AZURE_SP_KEY }}
-          AZURE_SP_TENANT: ${{ secrets.AZURE_SP_TENANT }}
-          TEST_STORAGE_CONNECTION_STRING: ${{ secrets.TEST_STORAGE_CONNECTION_STRING }}
-          TEST_LOG_ANALYTICS_WORKSPACE_ID: ${{ secrets.TEST_LOG_ANALYTICS_WORKSPACE_ID }}
-          OPENSTACK_USER_ID: ${{ secrets.OPENSTACK_USER_ID }}
-          OPENSTACK_PASSWORD: ${{ secrets.OPENSTACK_PASSWORD }}
-          OPENSTACK_PROJECT_ID: ${{ secrets.OPENSTACK_PROJECT_ID }}
-          OPENSTACK_AUTH_URL: ${{ secrets.OPENSTACK_AUTH_URL }}
-          AZURE_DEVOPS_BUILD_DEFINITON_ID: ${{ secrets.AZURE_DEVOPS_BUILD_DEFINITON_ID }}
-          AZURE_DEVOPS_ORGANIZATION_URL: ${{ secrets.AZURE_DEVOPS_ORGANIZATION_URL }}
-          AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
-          AZURE_DEVOPS_POOL_NAME: ${{ secrets.AZURE_DEVOPS_POOL_NAME }}
-          AZURE_DEVOPS_PROJECT: ${{ secrets.AZURE_DEVOPS_PROJECT }}
-        run: make e2e-test
 
   statics:
     name: Static Checks
