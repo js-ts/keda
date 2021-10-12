@@ -140,7 +140,7 @@ func (r *ScaledJobReconciler) reconcileScaledJob(logger logr.Logger, scaledJob *
 	}
 
 	// Check ScaledJob is Ready or not
-	_, err = r.scaleHandler.GetScalers(scaledJob)
+	_, err = r.scaleHandler.GetScalersCache(scaledJob)
 	if err != nil {
 		logger.Error(err, "Error getting scalers")
 		return "Failed to ensure ScaledJob is correctly created", err

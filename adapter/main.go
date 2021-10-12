@@ -17,15 +17,19 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	kedacontrollers "github.com/kedacore/keda/v2/controllers/keda"
 	"os"
 	"runtime"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"strconv"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	openapinamer "k8s.io/apiserver/pkg/endpoints/openapi"
 	genericapiserver "k8s.io/apiserver/pkg/server"
@@ -108,8 +112,46 @@ func (a *Adapter) makeProvider(globalHTTPTimeout time.Duration) (provider.Metric
 
 	prometheusServer := &prommetrics.PrometheusMetricServer{}
 	go func() { prometheusServer.NewServer(fmt.Sprintf(":%v", prometheusMetricsPort), prometheusMetricsPath) }()
+	err = runScaledObjectController(scheme, namespace, handler)
+	if err != nil {
+		return nil, err
+	}
 
 	return kedaprovider.NewProvider(logger, handler, kubeclient, namespace), nil
+}
+
+func runScaledObjectController(scheme *k8sruntime.Scheme, namespace string, scaleHandler scaling.ScaleHandler) error {
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+		Scheme:    scheme,
+		Namespace: namespace,
+	})
+	if err != nil {
+		return err
+	}
+
+	if err = (&kedacontrollers.MetricsScaledObjectReconciler{
+		ScaleHandler: scaleHandler,
+	}).SetupWithManager(mgr, controller.Options{
+		MaxConcurrentReconciles: 10,
+	}); err != nil {
+		return err
+	}
+
+	if err = (&kedacontrollers.MetricsScaledJobReconciler{
+		ScaleHandler: scaleHandler,
+	}).SetupWithManager(mgr, controller.Options{
+		MaxConcurrentReconciles: 10,
+	}); err != nil {
+		return err
+	}
+
+	go func() {
+		if err := mgr.Start(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
+
+	return nil
 }
 
 func printVersion() {

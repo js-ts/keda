@@ -17,6 +17,7 @@ limitations under the License.
 package provider
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"testing"
@@ -86,7 +87,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(3)
 		expectStatusPatch(ctrl, client)
 
-		metrics, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		metrics, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 
 		Expect(err).ToNot(HaveOccurred())
 		value, _ := metrics[0].Value.AsInt64()
@@ -116,7 +118,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(3)
 		expectStatusPatch(ctrl, client)
 
-		metrics, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		metrics, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 
 		Expect(err).ToNot(HaveOccurred())
 		value, _ := metrics[0].Value.AsInt64()
@@ -131,7 +134,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(3)
 		expectStatusPatch(ctrl, client)
 
-		_, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		_, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 
 		Expect(err).ShouldNot(BeNil())
 		Expect(err.Error()).Should(Equal("Some error"))
@@ -159,7 +163,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(10)
 		expectStatusPatch(ctrl, client)
 
-		_, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		_, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 
 		Expect(err).ShouldNot(BeNil())
 		Expect(err.Error()).Should(Equal("Some error"))
@@ -188,7 +193,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(10)
 		expectStatusPatch(ctrl, client)
 
-		metrics, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		metrics, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 
 		Expect(err).ToNot(HaveOccurred())
 		value, _ := metrics[0].Value.AsInt64()
@@ -243,7 +249,8 @@ var _ = Describe("fallback", func() {
 		statusWriter.EXPECT().Patch(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("Some error"))
 		client.EXPECT().Status().Return(statusWriter)
 
-		metrics, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		metrics, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 
 		Expect(err).ToNot(HaveOccurred())
 		value, _ := metrics[0].Value.AsInt64()
@@ -272,7 +279,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(10)
 		expectStatusPatch(ctrl, client)
 
-		_, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		_, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 
 		Expect(err).ShouldNot(BeNil())
 		Expect(err.Error()).Should(Equal("Some error"))
@@ -305,7 +313,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(10)
 		expectStatusPatch(ctrl, client)
 
-		_, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		_, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 		Expect(err).ToNot(HaveOccurred())
 		condition := so.Status.Conditions.GetFallbackCondition()
 		Expect(condition.IsTrue()).Should(BeTrue())
@@ -338,7 +347,8 @@ var _ = Describe("fallback", func() {
 		metricSpec := createMetricSpec(10)
 		expectStatusPatch(ctrl, client)
 
-		_, err := providerUnderTest.getMetricsWithFallback(scaler, metricName, nil, so, metricSpec)
+		metrics, err := scaler.GetMetrics(context.TODO(), metricName, nil)
+		_, err = providerUnderTest.getMetricsWithFallback(metrics, err, metricName, so, metricSpec)
 		Expect(err).ShouldNot(BeNil())
 		Expect(err.Error()).Should(Equal("Some error"))
 		condition := so.Status.Conditions.GetFallbackCondition()
