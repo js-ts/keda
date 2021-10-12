@@ -184,7 +184,7 @@ func (h *scaleHandler) GetScalersCache(scalableObject interface{}) (*cache.Scale
 		return nil, err
 	}
 
-	scalers, factories, err := h.buildScalers(withTriggers, podTemplateSpec, containerName)
+	scalers, factories := h.buildScalers(withTriggers, podTemplateSpec, containerName)
 	if err != nil {
 		h.logger.Error(err, "error building some scalers")
 	}
@@ -273,7 +273,7 @@ func (h *scaleHandler) checkScalers(ctx context.Context, scalableObject interfac
 }
 
 // buildScalers returns list of Scalers for the specified triggers
-func (h *scaleHandler) buildScalers(withTriggers *kedav1alpha1.WithTriggers, podTemplateSpec *corev1.PodTemplateSpec, containerName string) ([]scalers.Scaler, []func() (scalers.Scaler, error), error) {
+func (h *scaleHandler) buildScalers(withTriggers *kedav1alpha1.WithTriggers, podTemplateSpec *corev1.PodTemplateSpec, containerName string) ([]scalers.Scaler, []func() (scalers.Scaler, error)) {
 	logger := h.logger.WithValues("type", withTriggers.Kind, "namespace", withTriggers.Namespace, "name", withTriggers.Name)
 	var err error
 	resolvedEnv := make(map[string]string)
@@ -319,7 +319,7 @@ func (h *scaleHandler) buildScalers(withTriggers *kedav1alpha1.WithTriggers, pod
 		factories = append(factories, factory)
 	}
 
-	return scalersRes, factories, nil
+	return scalersRes, factories
 }
 
 func buildScaler(client client.Client, triggerType string, config *scalers.ScalerConfig) (scalers.Scaler, error) {

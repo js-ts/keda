@@ -19,6 +19,8 @@ package scaling
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	kedav1alpha1 "github.com/kedacore/keda/v2/apis/keda/v1alpha1"
 	mock_scalers "github.com/kedacore/keda/v2/pkg/mock/mock_scaler"
@@ -30,7 +32,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/record"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"testing"
 )
 
 func TestCheckScaledObjectScalersWithError(t *testing.T) {

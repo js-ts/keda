@@ -18,6 +18,7 @@ package keda
 
 import (
 	"context"
+
 	kedav1alpha1 "github.com/kedacore/keda/v2/apis/keda/v1alpha1"
 	"github.com/kedacore/keda/v2/pkg/scaling"
 	ctrl "sigs.k8s.io/controller-runtime"
